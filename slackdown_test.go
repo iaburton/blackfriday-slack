@@ -14,8 +14,9 @@ type testData struct {
 }
 
 func runTest(t *testing.T, tdt []testData) {
+	renderer := slackdown.NewRenderer()
+
 	for _, v := range tdt {
-		renderer := &slackdown.Renderer{}
 		md := bf.New(bf.WithRenderer(renderer), bf.WithExtensions(v.extensions))
 		ast := md.Parse([]byte(v.input))
 		output := string(renderer.Render(ast))
@@ -23,6 +24,12 @@ func runTest(t *testing.T, tdt []testData) {
 		if output != v.expected {
 			t.Errorf("got:%v\nwant:%v", output, v.expected)
 		}
+
+		if err := renderer.Err(); err != nil {
+			t.Fatalf("unexpected error from renderer; %v", err)
+		}
+
+		renderer.Reset()
 	}
 }
 

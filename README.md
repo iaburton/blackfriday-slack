@@ -1,13 +1,15 @@
 # blackfriday-slack
 A [Blackfriday](https://github.com/russross/blackfriday) v2 Renderer which translates markdown to slack styling
 
-[![godoc](https://img.shields.io/badge/godoc-reference-orange.svg?style=flat-square)](https://godoc.org/github.com/karriereat/blackfriday-slack)
-[![license](https://img.shields.io/github/license/karriereat/blackfriday-slack.svg?style=flat-square)](https://github.com/karriereat/blackfriday-slack/blob/master/LICENSE.md)
-[![Go Report Card](https://goreportcard.com/badge/github.com/karriereat/blackfriday-slack)](https://goreportcard.com/report/github.com/karriereat/blackfriday-slack)
+[![godoc](https://img.shields.io/badge/godoc-reference-orange.svg?style=flat-square)](https://godoc.org/github.com/iaburton/blackfriday-slack)
+
+## Note
+This fork includes a small breaking change from the original. It and other changes will soon be listed in the
+included changelog.md, as well as a minor release.
 
 ## Installation
 ```
-$ go get -u github.com/karriereat/blackfriday-slack
+$ go get -u github.com/iaburton/blackfriday-slack
 ```
 
 ## Examples
@@ -58,15 +60,11 @@ i had to mask the code block for this example
 ```
 
 ### Output
-![output image](https://github.com/karriereat/blackfriday-slack/blob/master/output.png)
-
-## Documentation
-[GoDoc](https://godoc.org/github.com/karriereat/blackfriday-slack)
-
+![output image](https://github.com/iaburton/blackfriday-slack/blob/master/output.png)
 
 ## Thanks
 Blackfriday-Slack is heavily inspired by [Blackfriday-Confluence](https://github.com/kentaro-m/blackfriday-confluence)
 
 
 ## License
-[Apache 2.0](https://github.com/karriereat/blackfriday-slack/blob/master/LICENSE)
+[Apache 2.0](https://github.com/iaburton/blackfriday-slack/blob/master/LICENSE)
