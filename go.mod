@@ -1,4 +1,4 @@
-module github.com/karriereat/blackfriday-slack
+module github.com/iaburton/blackfriday-slack
 
 go 1.12
 
