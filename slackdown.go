@@ -18,6 +18,10 @@ var (
 	linkTag          = []byte("<")
 	linkCloseTag     = []byte(">")
 	pipeSign         = []byte("|")
+	italicTag        = []byte("_")
+	// pseudo table delim
+	tableRowTag    = []byte("• ")
+	tableColumnTag = []byte(" *|*")
 
 	nlBytes    = []byte{'\n'}
 	spaceBytes = []byte{' '}
@@ -31,10 +35,11 @@ var (
 
 // Renderer is the rendering interface for slack output.
 type Renderer struct {
-	lastOutputLen int
-	itemLevel     int
-	itemListDepth map[int]int
-	err           error
+	lastOutputLen     int
+	itemLevel         int
+	itemListDepth     map[int]int
+	tableRowBeginning bool
+	err               error
 }
 
 func NewRenderer() *Renderer {
@@ -53,6 +58,7 @@ func (r *Renderer) Reset() {
 	r.lastOutputLen = 0
 	r.itemLevel = 0
 	r.err = nil
+	r.tableRowBeginning = false
 
 	for k := range r.itemListDepth {
 		delete(r.itemListDepth, k)
@@ -108,7 +114,6 @@ func (r *Renderer) cr(w io.Writer) {
 
 // RenderNode parses a single node of a syntax tree.
 func (r *Renderer) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.WalkStatus {
-
 	switch node.Type {
 	case bf.Text:
 		r.esc(w, node.Literal)
@@ -208,14 +213,47 @@ func (r *Renderer) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.Walk
 	case bf.HTMLSpan:
 
 	case bf.Table:
+		if entering {
+			r.out(w, nlBytes)
+		}
 
 	case bf.TableCell:
+		switch {
+		case node.IsHeader && entering:
+			if !r.tableRowBeginning {
+				r.out(w, spaceBytes)
+			}
+
+			r.out(w, italicTag)
+			r.out(w, strongTag)
+			r.tableRowBeginning = false
+
+		case node.IsHeader && !entering:
+			r.out(w, strongTag)
+			r.out(w, italicTag)
+			r.out(w, tableColumnTag)
+
+		case entering && r.tableRowBeginning:
+			r.out(w, tableRowTag)
+			r.tableRowBeginning = false
+
+		case !entering && !r.tableRowBeginning:
+			r.out(w, tableColumnTag)
+
+		default:
+			// 'entering' is true and the others are false.
+			r.out(w, spaceBytes)
+		}
 
 	case bf.TableHead:
 
 	case bf.TableBody:
 
 	case bf.TableRow:
+		if entering {
+			r.out(w, nlBytes)
+		}
+		r.tableRowBeginning = entering
 
 	default:
 		if r.err == nil {

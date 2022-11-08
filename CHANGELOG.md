@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ability for `Renderer` to use other `io.Writers` more easily
 - Error propegation from internal methods and rendering, usually those returned by `io.Writer`
 - `Renderer` can be reused via `Reset`
+- Basic `Table`s; they construct lists with various special characters to emphasize them
+    - Does not currently honor configurable formatting options
 
 ### Changed
 - The `Renderer` should no longer be made directly `r := &slackdown.Renderer{}`, instead it should be created 

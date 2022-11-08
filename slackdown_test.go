@@ -67,6 +67,27 @@ func TestList(t *testing.T) {
 	runTest(t, tdt)
 }
 
+func TestBasicTable(t *testing.T) {
+	tdt := []testData{
+		{
+			input: `This is a table
+
+| Author | Link Text |
+| :--- | :--- |
+| Foo | [Bar](http://example.com) |
+| Baz | Bop |`,
+			expected: `This is a table
+
+_*Author*_ *|* _*Link Text*_ *|*
+• Foo *|* <http://example.com|Bar> *|*
+• Baz *|* Bop *|*`,
+			extensions: bf.CommonExtensions,
+		},
+	}
+
+	runTest(t, tdt)
+}
+
 func TestNestedList(t *testing.T) {
 	tdt := []testData{
 		{
