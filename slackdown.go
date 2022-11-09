@@ -70,16 +70,17 @@ func (r *Renderer) esc(w io.Writer, text []byte) {
 		return
 	}
 
-	var start, end int
+	var start, end, n int
 	for ; end < len(text); end++ {
 		escSeq := escapes[text[end]]
 		if escSeq == nil {
 			continue
 		}
 
-		_, e1 := w.Write(text[start:end])
-		_, r.err = w.Write(escSeq)
+		m, e1 := w.Write(text[start:end])
+		n, r.err = w.Write(escSeq)
 		start = end + 1
+		r.lastOutputLen += n + m
 
 		if e1 != nil {
 			r.err = e1
@@ -91,7 +92,8 @@ func (r *Renderer) esc(w io.Writer, text []byte) {
 	}
 
 	if start < len(text) && end <= len(text) {
-		_, r.err = w.Write(text[start:end])
+		n, r.err = w.Write(text[start:end])
+		r.lastOutputLen += n
 	}
 }
 
@@ -114,6 +116,7 @@ func (r *Renderer) cr(w io.Writer) {
 
 // RenderNode parses a single node of a syntax tree.
 func (r *Renderer) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.WalkStatus {
+
 	switch node.Type {
 	case bf.Text:
 		r.esc(w, node.Literal)
@@ -213,9 +216,6 @@ func (r *Renderer) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.Walk
 	case bf.HTMLSpan:
 
 	case bf.Table:
-		if entering {
-			r.out(w, nlBytes)
-		}
 
 	case bf.TableCell:
 		switch {
@@ -251,7 +251,7 @@ func (r *Renderer) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.Walk
 
 	case bf.TableRow:
 		if entering {
-			r.out(w, nlBytes)
+			r.cr(w)
 		}
 		r.tableRowBeginning = entering
 

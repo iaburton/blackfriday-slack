@@ -72,11 +72,13 @@ func TestBasicTable(t *testing.T) {
 		{
 			input: `This is a table
 
+
 | Author | Link Text |
 | :--- | :--- |
 | Foo | [Bar](http://example.com) |
 | Baz | Bop |`,
 			expected: `This is a table
+
 
 _*Author*_ *|* _*Link Text*_ *|*
 • Foo *|* <http://example.com|Bar> *|*
