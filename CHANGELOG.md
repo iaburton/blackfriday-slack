@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Renderer` can be reused via `Reset`
 - Basic `Table`s; they construct lists with various special characters to emphasize them
     - Does not currently honor configurable formatting options
+- Optional `WithMentionTranslation` to change mattermost `@here` to slack `<!here>`
 
 ### Changed
 - The `Renderer` should no longer be made directly `r := &slackdown.Renderer{}`, instead it should be created 

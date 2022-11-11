@@ -13,8 +13,8 @@ type testData struct {
 	extensions bf.Extensions
 }
 
-func runTest(t *testing.T, tdt []testData) {
-	renderer := slackdown.NewRenderer()
+func runTest(t *testing.T, tdt []testData, opts ...slackdown.Option) {
+	renderer := slackdown.NewRenderer(opts...)
 
 	for _, v := range tdt {
 		md := bf.New(bf.WithRenderer(renderer), bf.WithExtensions(v.extensions))
@@ -75,13 +75,13 @@ func TestBasicTable(t *testing.T) {
 
 | Author | Link Text |
 | :--- | :--- |
-| Foo | [Bar](http://example.com) |
+| Foo | [Bar](http://example.com/hello@hello.com) |
 | Baz | Bop |`,
 			expected: `This is a table
 
 
 _*Author*_ *|* _*Link Text*_ *|*
-• Foo *|* <http://example.com|Bar> *|*
+• Foo *|* <http://example.com/hello@hello.com|Bar> *|*
 • Baz *|* Bop *|*`,
 			extensions: bf.CommonExtensions,
 		},
@@ -105,6 +105,23 @@ func TestNestedList(t *testing.T) {
 	}
 
 	runTest(t, tdt)
+}
+
+func TestMentionTranslations(t *testing.T) {
+	tdt := []testData{
+		{
+			input:      "Why hello there @everyone, how is it going?\nPlease see this @channel^820823C",
+			expected:   "Why hello there <!everyone>, how is it going?\nPlease see this <!channel^820823C>\n\n",
+			extensions: bf.CommonExtensions,
+		},
+		{
+			input:      "No matches here @ !",
+			expected:   "No matches here @ !\n\n",
+			extensions: bf.CommonExtensions,
+		},
+	}
+
+	runTest(t, tdt, slackdown.WithMentionTranslation())
 }
 
 func TestOrderedList(t *testing.T) {

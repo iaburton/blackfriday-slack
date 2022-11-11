@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"regexp"
 	"strconv"
 
 	bf "github.com/russross/blackfriday/v2"
@@ -31,6 +32,8 @@ var (
 		'<': []byte(`&lt;`),
 		'>': []byte(`&gt;`),
 	}
+
+	mentionRxp = regexp.MustCompile(`@(?P<mention>[\w\^]+)`)
 )
 
 // Renderer is the rendering interface for slack output.
@@ -39,13 +42,20 @@ type Renderer struct {
 	itemLevel         int
 	itemListDepth     map[int]int
 	tableRowBeginning bool
+	processMentions   func(io.Writer, []byte)
 	err               error
 }
 
-func NewRenderer() *Renderer {
-	return &Renderer{
+func NewRenderer(opts ...Option) *Renderer {
+	r := &Renderer{
 		itemListDepth: make(map[int]int),
 	}
+
+	for _, opt := range opts {
+		opt(r)
+	}
+
+	return r
 }
 
 // Err will return a non-nil error if Render methods failed, usually
@@ -119,7 +129,12 @@ func (r *Renderer) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.Walk
 
 	switch node.Type {
 	case bf.Text:
-		r.esc(w, node.Literal)
+		if r.processMentions == nil || node.Parent.Type == bf.Link {
+			r.esc(w, node.Literal)
+			break
+		}
+
+		r.processMentions(w, node.Literal)
 	case bf.Softbreak:
 
 	case bf.Hardbreak:
