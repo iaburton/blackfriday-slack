@@ -43,6 +43,14 @@ func TestHeading(t *testing.T) {
 	runTest(t, tdt)
 }
 
+func TestEscape(t *testing.T) {
+	tdt := []testData{
+		{input: "<&hello>\n", expected: "&lt;&amp;hello&gt;\n\n", extensions: bf.CommonExtensions},
+	}
+
+	runTest(t, tdt)
+}
+
 func TestCode(t *testing.T) {
 	tdt := []testData{
 		{
